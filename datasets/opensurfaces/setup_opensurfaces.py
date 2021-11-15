@@ -2,6 +2,8 @@ import urllib2
 import os
 import zipfile
 import process_opensurfaces
+import filter_opensurfaces
+
 
 def download_extract_opensurfaces_dataset():
     datasets_dir = os.path.join('datasets', 'opensurfaces')
@@ -26,4 +28,18 @@ def download_extract_opensurfaces_dataset():
 
 
 download_extract_opensurfaces_dataset()
-process_opensurfaces.process_opensurfaces()
+cwd = os.getcwd()
+os.chdir(os.path.join('datasets', 'opensurfaces', 'opensurfaces'))
+if not os.path.exists('photos') and not os.path.exists('photos-labels'):
+    print "Downloading and processing OpenSurfaces images"
+    process_opensurfaces.process_opensurfaces()
+    print "Downloading and processing complete"
+else:
+    print "OpenSurfaces images already downloaded"
+
+if not os.path.exists("../data"):
+    print "Filtering OpenSurfaces to only images with flooring..."
+    filter_opensurfaces.filter_copy_opensurfaces()
+    print "Flooring filter complete"
+else:
+    print "Initial filtering already complete"

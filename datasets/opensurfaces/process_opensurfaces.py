@@ -103,7 +103,6 @@ from PIL import Image, ImageDraw
 import numpy as np
 
 OPENSURFACES_STATIC_URL_ROOT = 'http://labelmaterial.s3.amazonaws.com'
-ROOT_DIR = os.path.join('datasets','opensurfaces','opensurfaces')
 
 
 
@@ -112,17 +111,17 @@ def process_photos(pool):
     """ Download all photos """
 
     print 'load scene names...'
-    scenes = {p['pk']: p['name'] for p in load_json(os.path.join(ROOT_DIR, 'photos.photoscenecategory.json'))}
-    flickr_users = {p['pk']: p['username'] for p in load_json(os.path.join(ROOT_DIR, 'photos.flickruser.json'))}
-    licenses = {p['pk']: p for p in load_json(os.path.join(ROOT_DIR, 'licenses.license.json'))}
+    scenes = {p['pk']: p['name'] for p in load_json('photos.photoscenecategory.json')}
+    flickr_users = {p['pk']: p['username'] for p in load_json('photos.flickruser.json')}
+    licenses = {p['pk']: p for p in load_json('licenses.license.json')}
 
     print 'create directory'
     if DOWNLOAD_PHOTO_IMAGES:
-        if not os.path.exists(os.path.join(ROOT_DIR, 'photos')):
-            os.makedirs(os.path.join(ROOT_DIR, 'photos'))
+        if not os.path.exists('photos'):
+            os.makedirs('photos')
 
     print 'processing photos'
-    with open(os.path.join(ROOT_DIR, 'photos.csv'), 'w') as f:
+    with open('photos.csv', 'w') as f:
         writer = csv.writer(f)
         writer.writerow((
             'photo_id',
@@ -166,7 +165,7 @@ def process_photos(pool):
             ))
 
             if DOWNLOAD_PHOTO_IMAGES:
-                filename = os.path.join(ROOT_DIR, 'photos', '%s.jpg' % p['pk'])
+                filename = 'photos', '%s.jpg' % p['pk']
                 url = '%s/%s' % (OPENSURFACES_STATIC_URL_ROOT, p['image_orig'])
                 progress_str = '%s/%s' % (i, len(photos))
                 pool.apply_async(download_image, (progress_str, filename, url))
@@ -453,7 +452,7 @@ def load_photos():
     """ Load all photos """
 
     print 'load photos...'
-    photos = load_json(os.path.join(ROOT_DIR, 'photos.photo.json'))
+    photos = load_json('photos.photo.json')
 
     print 'throw out photos with incorrect scene category'
     photos = filter(lambda x: x['scene_category_correct'], photos)
@@ -535,10 +534,9 @@ def parse_bsdf_c_d(bsdf):
 
 def parse_bsdf_albedo(bsdf):
     """ Return (diffuse RGB albedo, specular RGB albedo) for a BRDF """
-    from colormath.color_objects import RGBColor
+    from colormath.color_objects import sRGBColor
 
-    rgb = RGBColor()
-    rgb.set_from_rgb_hex(bsdf['color'])
+    rgb = sRGBColor.new_from_rgb_hex(bsdf['color'])
     v = max(rgb.rgb_r, rgb.rgb_b, rgb.rgb_g) / 255.0
     # approximate cielab_inverse_f.
     # we have V instead of L, so the same inverse formula doesn't

@@ -1,2 +1,6 @@
+colormath==3.0.0
+decorator==4.4.2
+networkx==2.2
 numpy==1.16.6
 Pillow==6.2.2
+tqdm==4.62.3
