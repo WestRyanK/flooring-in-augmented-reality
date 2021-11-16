@@ -7,7 +7,9 @@ This project relies on several external repositories and datasets which will nee
 # General Setup
 All commands assume you are running from the root FAR directory with the python virtual environment activated and python dependencies installed.
 Many commands have run configurations setup in PyCharm. These configurations are given where they exist. In general, 
-you must complete these set up steps in the order that they appear.
+you must complete these set up steps in the order that they appear. Also, be sure you install the exact versions of 
+dependencies in `requirements.txt`. There are several dependencies that must be exact or else errors will occur 
+(flatbuffers==1.12 and tensorflow==1.15.0 for example).
 
 Initial Session:
 ```
@@ -44,11 +46,20 @@ python datasets/ade20k/setup_ade20k.py
 
 
 # DeepLab Project Setup
-The DeepLab network is part of the Tensorflow Models repository, so to train our network, we will need to clone that
-repository and follow their setup instructions. You can do that with the following:
+The DeepLab network is part of the Tensorflow Models repository, so to train the segmentation network, we will need to 
+clone that repository and follow their setup instructions. You can do that with the following:
 
 `Setup DeepLab`:
 ```
 sh deeplab/setup_deeplab.sh
 ```
 
+Once the deeplab repository and the datasets have been set up, you can train the deeplab network on our dataset. The
+following command will convert our dataset to tfrecord shards, train the network on the dataset, visualize the 
+segmentation output, and export a tflite model for on device inference. It will then copy that model to the Assets 
+folder of the Android AAR project.
+
+`Create Network`:
+```
+sh deeplab/create_network.sh
+```

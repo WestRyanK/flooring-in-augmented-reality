@@ -55,9 +55,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 import math
+import os
 import os.path
 import sys
-import build_data
+from deeplab.datasets.build_data import ImageReader
+from deeplab.datasets.build_data import image_seg_to_tfexample
 from six.moves import range
 import tensorflow as tf
 
@@ -97,8 +99,8 @@ def _convert_dataset(dataset):
     num_images = len(filenames)
     num_per_shard = int(math.ceil(num_images / _NUM_SHARDS))
 
-    image_reader = build_data.ImageReader('png', channels=3)
-    label_reader = build_data.ImageReader('png', channels=1)
+    image_reader = ImageReader('png', channels=3)
+    label_reader = ImageReader('png', channels=1)
 
     for shard_id in range(_NUM_SHARDS):
         output_filename = os.path.join(
@@ -125,7 +127,7 @@ def _convert_dataset(dataset):
                 if height != seg_height or width != seg_width:
                     raise RuntimeError('Shape mismatched between image and label.')
                 # Convert to tf example.
-                example = build_data.image_seg_to_tfexample(
+                example = image_seg_to_tfexample(
                     image_data, filenames[i], height, width, seg_data)
                 tfrecord_writer.write(example.SerializeToString())
         sys.stdout.write('\n')
@@ -133,9 +135,11 @@ def _convert_dataset(dataset):
 
 
 def main(unused_argv):
-    datasets = ['train', 'val', 'test']
-    for dataset in datasets:
-        _convert_dataset(dataset)
+    if not os.path.exists(FLAGS.output_dir):
+        os.makedirs(FLAGS.output_dir)
+        datasets = ['train', 'val', 'test']
+        for dataset in datasets:
+            _convert_dataset(dataset)
 
 
 if __name__ == '__main__':

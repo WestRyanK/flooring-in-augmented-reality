@@ -34,7 +34,7 @@ def fuzz_copy(src, dst, dst_ext, resample_type, convert, pad_color):
     if convert:
         image_array = np.array(image)
         h, w = image_array.shape[:2]
-        image_array = (image_array[:, :, MATERIAL_CHANNEL] == VALUE_FLOOR).astype(np.uint8) * 255
+        image_array = (image_array[:, :, MATERIAL_CHANNEL] == VALUE_FLOOR).astype(np.uint8)
         image = Image.fromarray(image_array)
     image.save(dst + dst_ext)
     image_mirror = ImageOps.mirror(image)
@@ -42,9 +42,8 @@ def fuzz_copy(src, dst, dst_ext, resample_type, convert, pad_color):
 
 
 def fuzz_copy_all(paths, folder_name):
-    dst_inputs_dir = os.path.join(OUTPUT_DIR, folder_name, INPUTS)
-    dst_labels_dir = os.path.join(OUTPUT_DIR, folder_name, LABELS)
-    os.path.join(OUTPUT_DIR, folder_name, INPUTS)
+    dst_inputs_dir = os.path.join(OUTPUT_DIR, INPUTS, folder_name)
+    dst_labels_dir = os.path.join(OUTPUT_DIR, LABELS, folder_name)
     if not os.path.exists(dst_inputs_dir):
         os.makedirs(dst_inputs_dir)
     if not os.path.exists(dst_labels_dir):
