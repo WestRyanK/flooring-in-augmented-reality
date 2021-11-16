@@ -6,7 +6,8 @@ This project relies on several external repositories and datasets which will nee
 
 # General Setup
 All commands assume you are running from the root FAR directory with the python virtual environment activated and python dependencies installed.
-Many commands have run configurations setup in PyCharm. These configurations are given where they exist.
+Many commands have run configurations setup in PyCharm. These configurations are given where they exist. In general, 
+you must complete these set up steps in the order that they appear.
 
 Initial Session:
 ```
@@ -18,15 +19,6 @@ pip install -r requirements.txt
 Subsequent Sessions:
 ```
 source venv/bin/activate
-```
-
-# DeepLab Project Setup
-The DeepLab network is part of the Tensorflow Models repository, so to train our network, we will need to clone that
-repository and follow their setup instructions. You can do that with the following:
-
-`Setup DeepLab`:
-```
-sh deeplab/setup_deeplab.sh
 ```
 
 
@@ -49,3 +41,14 @@ Follow these steps to download and set up the ADE20K dataset.
 ```
 python datasets/ade20k/setup_ade20k.py
 ```
+
+
+# DeepLab Project Setup
+The DeepLab network is part of the Tensorflow Models repository, so to train our network, we will need to clone that
+repository and follow their setup instructions. You can do that with the following:
+
+`Setup DeepLab`:
+```
+sh deeplab/setup_deeplab.sh
+```
+
