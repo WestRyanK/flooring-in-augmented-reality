@@ -3,7 +3,7 @@ datasets/opensurfaces/*.zip
 datasets/opensurfaces/data
 datasets/ade20k/*/
 datasets/ade20k/*.zip
-
+deeplab/models
 
 
 

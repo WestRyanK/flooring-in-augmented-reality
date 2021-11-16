@@ -21,6 +21,13 @@ source venv/bin/activate
 ```
 
 # DeepLab Project Setup
+The DeepLab network is part of the Tensorflow Models repository, so to train our network, we will need to clone that
+repository and follow their setup instructions. You can do that with the following:
+
+`Setup DeepLab`:
+```
+sh deeplab/setup_deeplab.sh
+```
 
 
 
