@@ -11,7 +11,7 @@ DATASET_NAME="flooring"
 INIT_LAST_LAYER=true
 NUM_ITERATIONS=30000
 MODEL_VARIANT="mobilenet_v2"
-TFLITE_MODEL_OUTPUT_DIR=""
+TFLITE_MODEL_OUTPUT_DIR="far_plugin/app/src/main/assets"
 
 # Exit immediately if a command has an error.
 set -e
