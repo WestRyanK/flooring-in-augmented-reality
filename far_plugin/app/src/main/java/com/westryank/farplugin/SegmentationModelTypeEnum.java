@@ -15,6 +15,7 @@ public enum SegmentationModelTypeEnum {
         return SegmentationModelTypeEnum.values()[inValue];
     }
 
+
     public String GetFilename() {
         return _filename;
     }

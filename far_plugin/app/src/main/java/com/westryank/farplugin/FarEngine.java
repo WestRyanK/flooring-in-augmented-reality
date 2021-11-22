@@ -13,7 +13,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class FarEngine {
-    private static final String TAG = "FAR:Engine";
+    private static final String TAG = "Far:Engine";
 
     private Context _context;
     private OutputResultTypeEnum _outputResultType;

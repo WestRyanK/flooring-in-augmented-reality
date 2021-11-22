@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SegmentationTuner {
-    private static final String TAG = "FAR:SegmentationTuner";
+    private static final String TAG = "Far:SegmentationTuner";
     private static final Scalar FOREGROUND = new Scalar(1);
     private static final Scalar BACKGROUND = new Scalar(2);
     private static Mat MORPHOLOGY_KERNEL;

@@ -15,7 +15,7 @@ import java.nio.channels.Channels;
 import java.util.List;
 
 public class SegmentationModel {
-    private static final String TAG = "FAR:SegmentationModel";
+    private static final String TAG = "Far:SegmentationModel";
 
     private ImageSegmenter _imageSegmenter;
     private SegmentationModelTypeEnum _segmentationModelType;

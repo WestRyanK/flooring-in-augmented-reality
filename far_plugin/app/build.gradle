@@ -35,5 +35,5 @@ dependencies {
 task exportPlugin(type:Copy, dependsOn:[build])
 {
     from "${buildDir}/outputs/aar/app-debug.aar"
-    into "${projectDir}/../../far/Assets/Plugins/Android/far_plugin"
+    into "${projectDir}/../../far_app/Assets/Plugins/Android/far_plugin"
 }

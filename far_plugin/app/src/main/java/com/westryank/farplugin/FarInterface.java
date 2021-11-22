@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 public class FarInterface {
-    private static final String TAG = "FAR:Interface";
+    private static final String TAG = "Far:Interface";
     private static FarEngine _farEngine;
 
     public static void Init(Context inAppContext, int inSegmentationModelType, int inOutputResultType) {

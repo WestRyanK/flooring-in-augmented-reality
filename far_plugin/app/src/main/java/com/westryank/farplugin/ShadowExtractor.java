@@ -10,7 +10,7 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class ShadowExtractor {
-    private static final String TAG = "FAR:ShadowExtractor";
+    private static final String TAG = "Far:ShadowExtractor";
 
     public Bitmap ExtractShadows(Bitmap inImage, Bitmap inMask) {
         Mat imageMat = new Mat();

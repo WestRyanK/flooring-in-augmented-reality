@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OpenCVUtils {
-    private static final String TAG = "FAR:OpenCVInitializer";
+    private static final String TAG = "Far:OpenCVInitializer";
     private static boolean _isOpenCVInitialized = false;
 
     public static void InitializeOpenCV() {
