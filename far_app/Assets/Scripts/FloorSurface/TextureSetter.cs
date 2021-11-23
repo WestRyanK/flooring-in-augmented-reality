@@ -17,7 +17,6 @@ public class TextureSetter : MonoBehaviour
 
     public void SetTexture(Texture2D inTexture)
     {
-        Debug.Log("TextureSet###");
         if (_material)
         {
             _material.mainTexture = inTexture;

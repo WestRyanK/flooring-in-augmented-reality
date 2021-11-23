@@ -6,27 +6,25 @@ using UnityEngine.UI;
 public class MainMenu : MonoBehaviour
 {
     [SerializeField]
-    private FloorSurfaceManager _floorSurfaceManager;
-    [SerializeField]
     private Text _totalDurationText;
     [SerializeField]
     private Text _segmentationDurationText;
     [SerializeField]
-    private Text _extractShadowDurationText;
+    private Text _extractLightingDurationText;
 
-    public void UpdateImageProcessDuration(float inTotalDuration, float inSegmentationDuration, float inExtractShadowDuration)
+    public void UpdateImageProcessDuration(float inTotalDuration, float inSegmentationDuration, float inExtractLightingDuration)
     {
         if (_totalDurationText)
         {
-            _totalDurationText.text = $"Total: {inTotalDuration}";
+            _totalDurationText.text = $"Total: {inTotalDuration} ms";
         }
         if (_segmentationDurationText)
         {
-            _segmentationDurationText.text = $"Segmentation: {inSegmentationDuration}";
+            _segmentationDurationText.text = $"Segmentation: {inSegmentationDuration} ms";
         }
-        if (_extractShadowDurationText)
+        if (_extractLightingDurationText)
         {
-            _extractShadowDurationText.text = $"Shadow: {inExtractShadowDuration}";
+            _extractLightingDurationText.text = $"Lighting: {inExtractLightingDuration} ms";
         }
     }
 }

@@ -52,10 +52,16 @@ public class FarSettings : MonoBehaviour
         set
         {
             _lightingType = value;
-            // PluginWrapper.SetLightingType(_lightingType.Value);
+            if (_lightingProjector)
+            {
+                bool isLightingOn = _lightingType == LightingTypeEnum.lightingOn;
+                _lightingProjector.SetActive(isLightingOn);
+            }
         }
     }
 
     [SerializeField]
     private GameObject _debugImageViewer;
+    [SerializeField]
+    private GameObject _lightingProjector;
 }

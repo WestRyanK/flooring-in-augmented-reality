@@ -21,9 +21,9 @@ public class PluginWrapper
         return PluginUtils.StaticCall<byte[]>("SegmentInputImage", FAR_INTERFACE_CLASS);
     }
 
-    public static byte[] ExtractInputImageShadows()
+    public static byte[] ExtractInputImageLighting()
     {
-        return PluginUtils.StaticCall<byte[]>("ExtractInputImageShadows", FAR_INTERFACE_CLASS);
+        return PluginUtils.StaticCall<byte[]>("ExtractInputImageLighting", FAR_INTERFACE_CLASS);
     }
 
     public static void SetOutputResultType(OutputResultTypeEnum inOutputResultType)

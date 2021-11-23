@@ -24,17 +24,17 @@ public class FarInterface {
         return _farEngine.SegmentInputImage();
     }
 
-    public static byte[] ExtractInputImageShadows() {
-        if (AssertFarEngine("ExtractInputImageShadows"))
+    public static byte[] ExtractInputImageLighting() {
+        if (AssertFarEngine("ExtractInputImageLighting"))
             return new byte[0];
-        return _farEngine.ExtractInputImageShadows();
+        return _farEngine.ExtractInputImageLighting();
     }
 
     public static void SetOutputResultType(int inOutputResultType) {
         if (AssertFarEngine("SetOutputResultType"))
             return;
         OutputResultTypeEnum value = OutputResultTypeEnum.FromInt(inOutputResultType);
-        Log.v(TAG, "SetOutputResultType: " + Integer.toString(inOutputResultType) + " " + value.toString());
+//        Log.v(TAG, "SetOutputResultType: " + Integer.toString(inOutputResultType) + " " + value.toString());
         _farEngine.InitSegmentationTuner(value);
     }
 
@@ -42,7 +42,7 @@ public class FarInterface {
         if (AssertFarEngine("SetSegmentationModelType"))
             return;
         SegmentationModelTypeEnum value = SegmentationModelTypeEnum.FromInt(inSegmentationModelType);
-        Log.v(TAG, "SetSegmentationModelType: " + Integer.toString(inSegmentationModelType) + " " + value.toString());
+//        Log.v(TAG, "SetSegmentationModelType: " + Integer.toString(inSegmentationModelType) + " " + value.toString());
         _farEngine.InitSegmentationModel(value);
     }
 

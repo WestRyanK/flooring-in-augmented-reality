@@ -1,6 +1,7 @@
 Shader "Projector/Segmentation" {
 	Properties {
-		_MainTex ("Texture", 2D) = "gray" {}
+		[NoScaleOffset] _MainTex ("Texture", 2D) = "gray" {}
+		_ClipCutoff("Clip Cutoff", Range(0, 1)) = 0.5
 	}
 	Subshader {
 		Tags {"Queue"="Transparent"}
@@ -17,26 +18,26 @@ Shader "Projector/Segmentation" {
 			#pragma fragment frag
 			#include "UnityCG.cginc"
 			
-			struct v2f {
+			struct vertex2fragment {
 				float4 uv : TEXCOORD0;
 				float4 pos : SV_POSITION;
 			};
 			
 			float4x4 unity_Projector;
 			
-			v2f vert (float4 vertex : POSITION)
+			vertex2fragment vert(float4 vertex : POSITION)
 			{
-				v2f o;
-				o.pos = UnityObjectToClipPos(vertex);
-				o.uv = mul (unity_Projector, vertex);
-				return o;
+				vertex2fragment output;
+				output.pos = UnityObjectToClipPos(vertex);
+				output.uv = mul(unity_Projector, vertex);
+				return output;
 			}
 			
 			sampler2D _MainTex;
 			
-			fixed4 frag (v2f i) : SV_Target
+			fixed4 frag(vertex2fragment input) : SV_Target
 			{
-				fixed2 coords = (i.uv / i.uv.w).xy;
+				fixed2 coords = (input.uv / input.uv.w).xy;
 				if (any(coords.xy > 1) || any(coords.xy < 0))
 					return fixed(1);
 

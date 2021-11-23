@@ -2,7 +2,6 @@ package com.westryank.farplugin;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.util.Log;
 
 import org.tensorflow.lite.DataType;
@@ -20,13 +19,13 @@ public class FarEngine {
 
     private SegmentationModel _segmentationModel;
     private SegmentationTuner _segmentationTuner;
-    private ShadowExtractor _shadowExtractor;
+    private LightingExtractor _lightingExtractor;
 
     private TensorImage _inputTensor;
     private Bitmap _inputBitmap;
 
     private ByteBuffer _segmentationBuffer;
-    private ByteBuffer _shadowBuffer;
+    private ByteBuffer _lightingBuffer;
     private Bitmap _segmentationBitmap;
 
     private Lock _segmentationModelLock = new ReentrantLock();
@@ -35,6 +34,7 @@ public class FarEngine {
         _context = inContext;
         InitSegmentationModel(inSegmentationModelType);
         InitSegmentationTuner(inOutputResultType);
+        InitLightingExtractor();
     }
 
     public byte[] SegmentInputImage() {
@@ -42,13 +42,10 @@ public class FarEngine {
         Bitmap initialSegmentationBitmap = null;
         try {
             initialSegmentationBitmap = _segmentationModel.Infer(_inputTensor);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, e.toString());
             return new byte[0];
-        }
-        finally
-        {
+        } finally {
             _segmentationModelLock.unlock();
         }
 
@@ -67,12 +64,12 @@ public class FarEngine {
         return _segmentationBuffer.array();
     }
 
-    public byte[] ExtractInputImageShadows() {
-        Bitmap shadowBitmap = _shadowExtractor.ExtractShadows(_inputBitmap, _segmentationBitmap);
+    public byte[] ExtractInputImageLighting() {
+        Bitmap lightingBitmap = _lightingExtractor.ExtractLighting(_inputBitmap, _segmentationBitmap);
 
-        _shadowBuffer = CopyBitmapToBuffer(shadowBitmap, _shadowBuffer);
-        shadowBitmap.recycle();
-        return _shadowBuffer.array();
+        _lightingBuffer = CopyBitmapToBuffer(lightingBitmap, _lightingBuffer);
+        lightingBitmap.recycle();
+        return _lightingBuffer.array();
     }
 
     private ByteBuffer CopyBitmapToBuffer(Bitmap inBitmap, ByteBuffer inBuffer) {
@@ -117,12 +114,20 @@ public class FarEngine {
             Log.v(TAG, "SegmentationModel Initialized");
         } catch (Exception e) {
             Log.e(TAG, "Error initializing SegmentationModel", e);
-        }
-        finally
-        {
+        } finally {
             _segmentationModelLock.unlock();
         }
     }
+
+    public void InitLightingExtractor() {
+        try {
+            Log.v(TAG, "Initializing ShadowExtractor");
+            _lightingExtractor = new LightingExtractor();
+        } catch (Exception e) {
+            Log.v(TAG, "ShadowExtractor Initialized", e);
+        }
+    }
+
 
     public void SetInputImage(int[] inInputImage, int inWidth, int inHeight) {
         if (inInputImage == null) {

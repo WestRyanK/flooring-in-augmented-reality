@@ -53,6 +53,9 @@ public class CameraViewFitter : MonoBehaviour
                 height = 1;
                 break;
         }
-        transform.localScale = new Vector3(width, height, 1);
+        // Vector3 scale = new Vector3(0.4f, 1.1f, 1);
+        Vector3 scale = new Vector3(width, height, 1);
+        Debug.Log($"W: {width} H: {height}");
+        transform.localScale = scale;
     }
 }

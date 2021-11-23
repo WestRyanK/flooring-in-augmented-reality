@@ -17,7 +17,7 @@ public class FloorSurfaceManager : MonoBehaviour
     [SerializeField]
     private UnityEvent<Texture2D> _onSegmentImageComplete;
     [SerializeField]
-    private UnityEvent<Texture2D> _onExtractShadowsComplete;
+    private UnityEvent<Texture2D> _onExtractLightingComplete;
     private Texture2D _segmentationTexture;
     private Texture2D _lightingTexture;
     private CameraImageFetcher _cameraImageFetcher;
@@ -62,7 +62,7 @@ public class FloorSurfaceManager : MonoBehaviour
             byte[] lightingTextureData = null;
             Stopwatch totalStopwatch = null;
             Stopwatch segmentationStopwatch = null;
-            Stopwatch extractShadowStopwatch = null;
+            Stopwatch extractLightingStopwatch = null;
             yield return WaitForTask(() =>
             {
                 using (totalStopwatch = new Stopwatch())
@@ -73,24 +73,24 @@ public class FloorSurfaceManager : MonoBehaviour
                     {
                         segmentationTextureData = PluginWrapper.SegmentInputImage();
                     }
-                    using (extractShadowStopwatch = new Stopwatch())
+                    using (extractLightingStopwatch = new Stopwatch())
                     {
-                        Debug.Log("ExtractInputImageShadows");
-                        lightingTextureData = PluginWrapper.ExtractInputImageShadows();
+                        lightingTextureData = PluginWrapper.ExtractInputImageLighting();
                     }
                 }
-                Debug.Log("Task done###");
             });
 
             UpdateTexture(segmentationTextureData, ref _segmentationTexture);
-            // UpdateTexture(lightingTextureData, ref _lightingTexture);
+            UpdateTexture(lightingTextureData, ref _lightingTexture);
 
+            Debug.Log($"SegmentationTexture: {_segmentationTexture}");
             _onSegmentImageComplete.Invoke(_segmentationTexture);
-            _onExtractShadowsComplete.Invoke(_lightingTexture);
+            Debug.Log($"LightingTexture: {_lightingTexture}");
+            _onExtractLightingComplete.Invoke(_lightingTexture);
             _onProcessCameraImageComplete.Invoke(
                 totalStopwatch?.Duration ?? 0,
                 segmentationStopwatch?.Duration ?? 0,
-                extractShadowStopwatch?.Duration ?? 0);
+                extractLightingStopwatch?.Duration ?? 0);
         }
         else
         {
@@ -112,7 +112,6 @@ public class FloorSurfaceManager : MonoBehaviour
         {
             yield return null;
         }
-        Debug.Log("Task complete");
     }
 
     private void InitProjectorTexture(int inWidth, int inHeight, ref Texture2D refTexture)
