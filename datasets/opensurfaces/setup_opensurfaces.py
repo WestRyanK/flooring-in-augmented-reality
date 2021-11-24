@@ -12,17 +12,17 @@ def download_extract_opensurfaces_dataset():
     opensurfaces_root_dir = os.path.join(datasets_dir, 'opensurfaces')
     if not os.path.exists(opensurfaces_zip_path):
         with open(opensurfaces_zip_path, 'wb') as zip_file:
-            print "Downloading OpenSurfaces Dataset..."
+            print "Downloading OpenSurfaces dataset..."
             zip_file.write(urllib2.urlopen(opensurfaces_url).read())
-            print "Download Complete"
+            print "Download complete"
     else:
         print "OpenSurfaces already downloaded"
     if not os.path.exists(opensurfaces_root_dir):
         os.makedirs(opensurfaces_root_dir)
         with zipfile.ZipFile(opensurfaces_zip_path, 'r') as zip_file:
-            print "Unzipping OpenSurfaces Dataset..."
+            print "Unzipping OpenSurfaces dataset..."
             zip_file.extractall(datasets_dir)
-            print "Unzip Complete"
+            print "Unzip complete"
     else:
         print "OpenSurfaces already unzipped"
 
