@@ -5,9 +5,11 @@
       <sourceFolder url="file://$MODULE_DIR$/deeplab/models" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/deeplab/models/research" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/deeplab/models/research/slim" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/datasets" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/datasets/opensurfaces/opensurfaces" />
       <excludeFolder url="file://$MODULE_DIR$/datasets/opensurfaces/data" />
+      <excludeFolder url="file://$MODULE_DIR$/datasets/ade20k/ade20k" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
