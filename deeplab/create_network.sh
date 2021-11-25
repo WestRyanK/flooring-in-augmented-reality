@@ -9,7 +9,7 @@ IMAGE_SIZE=1024
 OUTPUT_STRIDE=32 # https://github.com/tensorflow/models/issues/6464
 DATASET_NAME="flooring"
 INIT_LAST_LAYER=true
-NUM_ITERATIONS=30000
+NUM_ITERATIONS=40000
 MODEL_VARIANT="mobilenet_v2"
 TFLITE_MODEL_OUTPUT_DIR="far_plugin/app/src/main/assets"
 
@@ -23,15 +23,25 @@ CURRENT_DIR=${PWD}
 WORK_DIR="${CURRENT_DIR}"
 
 # Go to datasets folder and create Flooring dataset
-OPENSURFACES_DIR="${PROJECT_ROOT_DIR}/datasets/opensurfaces/data"
-IMAGE_FOLDER="${OPENSURFACES_DIR}/inputs"
-SEMANTIC_SEG_FOLDER="${OPENSURFACES_DIR}/labels"
-DATASET_OUTPUT_DIR="${OPENSURFACES_DIR}/tfrecord"
+DATASETS_DIR="${PROJECT_ROOT_DIR}/datasets"
+DATA_DIR="${DATASETS_DIR}/temp_data"
+OPENSURFACES_DATA_DIR="${DATASETS_DIR}/opensurfaces/data"
+ADE20K_DATA_DIR="${DATASETS_DIR}/ade20k/data"
+IMAGE_FOLDER="${DATA_DIR}/inputs"
+SEMANTIC_SEG_FOLDER="${DATA_DIR}/labels"
+DATASET_OUTPUT_DIR="${DATASETS_DIR}/tfrecord"
+# Combine all our datasets into one folder for creating tfrecord
+mkdir "${DATA_DIR}"
+cp -r "${OPENSURFACES_DATA_DIR}/." "${DATA_DIR}"
+cp -r "${ADE20K_DATA_DIR}/." "${DATA_DIR}"
 python "build_flooring_data.py" \
   --image_folder="${IMAGE_FOLDER}" \
   --semantic_segmentation_folder="${SEMANTIC_SEG_FOLDER}" \
   --image_format="png" \
   --output_dir="${DATASET_OUTPUT_DIR}"
+
+# remove combined dataset folder once tfrecords are created
+rm -r "${DATA_DIR}"
 
 # Go back to original directory
 cd "${CURRENT_DIR}"
@@ -124,6 +134,6 @@ python "${WORK_DIR}/add_metadata.py" \
   --export_directory="${METADATA_TFLITE_DIR}"
 
 # Copy final tflite model to Android AAR Assets dir
-FINAL_OUTPUT_PATH="${PROJECT_ROOT_DIR}/${TFLITE_MODEL_OUTPUT_DIR}/deeplab_mnv2_${OUTPUT_SIZE}.tflite"
+FINAL_OUTPUT_PATH="${PROJECT_ROOT_DIR}/${TFLITE_MODEL_OUTPUT_DIR}/deeplab_mnv2_${OUTPUT_SIZE}_osade.tflite"
 echo "Copying tflite file to '${FINAL_OUTPUT_PATH}'"
 cp "${METADATA_TFLITE_DIR}/model.tflite" "${FINAL_OUTPUT_PATH}"

@@ -3,6 +3,8 @@ datasets/opensurfaces/*.zip
 datasets/opensurfaces/data
 datasets/ade20k/*/
 datasets/ade20k/*.zip
+datasets/tfrecord
+datasets/temp_data
 deeplab/models
 deeplab/exp
 deeplab/init_checkpoint

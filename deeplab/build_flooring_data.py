@@ -140,6 +140,8 @@ def main(unused_argv):
         datasets = ['train', 'val', 'test']
         for dataset in datasets:
             _convert_dataset(dataset)
+    else:
+        print("Output dir '{}' already exists. Skipping creating tfrecords".format(FLAGS.output_dir))
 
 
 if __name__ == '__main__':
