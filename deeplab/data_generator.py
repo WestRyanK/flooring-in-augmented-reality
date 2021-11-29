@@ -100,9 +100,9 @@ _ADE20K_INFORMATION = DatasetDescriptor(
 )
 
 _FLOORING_INFORMATION = DatasetDescriptor(
-    splits_to_sizes={'train': 7976,
-                     'val': 996,
-                     'test': 996},
+    splits_to_sizes={'train': 18982,
+                     'val': 386,
+                     'test': 0},
     num_classes=21,
     ignore_label=255,
 )
