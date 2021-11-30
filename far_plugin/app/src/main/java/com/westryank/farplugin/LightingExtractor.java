@@ -18,6 +18,8 @@ import java.util.List;
 
 public class LightingExtractor {
     private static final String TAG = "Far:LightingExtractor";
+    private static final int GRAY = 128;
+    private static final int DARKEN_BIAS = 38;
 
     private void Clamp(Mat inMat) {
         Imgproc.threshold(inMat, inMat, 0, 255, Imgproc.THRESH_TOZERO);
@@ -48,7 +50,7 @@ public class LightingExtractor {
 
         Scalar avgBrightness = Core.mean(imageMat, maskMat);
 //        Scalar medBrightness = new Scalar(median(imageMat, maskMat));
-        Scalar avgBrightnessOffset = new Scalar(128 - avgBrightness.val[0]);
+        Scalar avgBrightnessOffset = new Scalar((GRAY - DARKEN_BIAS) - avgBrightness.val[0]);
         Core.add(imageMat, avgBrightnessOffset, imageMat);
         Clamp(imageMat);
 
