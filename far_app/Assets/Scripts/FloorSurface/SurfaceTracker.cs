@@ -8,66 +8,58 @@ using UnityEngine.XR.ARSubsystems;
 public class SurfaceTracker : MonoBehaviour
 {
     [SerializeField]
-    private int TrackedRecentFramesCount;
-    [SerializeField]
     private float FloorElevation;
-    [SerializeField]
-    private DataPointAverager.Calculation HeightAveragingCalculation;
-
-    private ARRaycastManager _raycastManager;
-    private Vector2 _centerScreen;
-    private DataPointAverager _dataPointAverager;
+    private ARPlaneManager _arPlaneManager;
 
     void Start()
     {
         Debug.Log("Initializing SurfaceTracker");
-        _raycastManager = FindObjectOfType<ARRaycastManager>();
-        _centerScreen = new Vector2(Screen.width * 0.5f, Screen.height * 0.05f);
-        _dataPointAverager = new DataPointAverager(TrackedRecentFramesCount, HeightAveragingCalculation);
-        SetTrackingObjectHeight(0);
-        //StartCoroutine(RepeatAttachToSurface(TrackingInterval));
-    }
-
-    private IEnumerator RepeatAttachToSurface(float inInverval)
-    {
-        while (true)
+        _arPlaneManager = FindObjectOfType<ARPlaneManager>();
+        if (_arPlaneManager)
         {
-            yield return new WaitForSeconds(inInverval);
-            AttachToSurface();
+            _arPlaneManager.planesChanged += OnArPlanesChanged;
+        }
+        else
+        {
+            Debug.Log("ArPlaneManager was null in SurfaceTracker!");
         }
     }
 
-    void Update()
+    void OnDestroy()
     {
-        AttachToSurface();
+        _arPlaneManager.planesChanged -= OnArPlanesChanged;
     }
 
-    private void AttachToSurface()
+    private ARPlane FindBiggestPlane()
     {
-        if (_raycastManager)
+        ARPlane biggestPlane = null;
+        float biggestPlaneSize = 0;
+        foreach (ARPlane plane in _arPlaneManager.trackables)
         {
-            List<ARRaycastHit> hitResults = new List<ARRaycastHit>();
-            _raycastManager.Raycast(_centerScreen, hitResults);
-            if (hitResults.Count > 0)
+            float planeSize = plane.size.magnitude;
+            if (planeSize > biggestPlaneSize)
             {
-                // Debug.Log("Attaching to surface...  found " + hitResults.Count.ToString());
-                //if (TrackingObject.transform.position.y > hitResults[0].pose.position.y)
-                if (true)
-                {
-                    SetTrackingObjectHeight(hitResults[0].pose.position.y);
-                }
+                biggestPlaneSize = planeSize;
+                biggestPlane = plane;
             }
+        }
+
+        return biggestPlane;
+    }
+
+    private void OnArPlanesChanged(ARPlanesChangedEventArgs inArgs)
+    {
+        ARPlane biggestPlane = FindBiggestPlane();
+        if (biggestPlane)
+        {
+            SetTrackingObjectHeight(biggestPlane.center.y);
         }
     }
 
     private void SetTrackingObjectHeight(float inHeight)
     {
-        _dataPointAverager.AddDataPoint(inHeight);
-        float averageHeight = _dataPointAverager.Average;
-
         Vector3 position = gameObject.transform.position;
-        position.y = averageHeight + FloorElevation;
+        position.y = inHeight + FloorElevation;
         gameObject.transform.position = position;
-        // Debug.Log("Position y: " + position.y.ToString());
     }
 }
