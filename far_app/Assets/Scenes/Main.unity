@@ -447,7 +447,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 217.5, y: 0}
+  m_AnchoredPosition: {x: 214.79112, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &104852331
@@ -1190,7 +1190,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 119.5, y: 0}
+  m_AnchoredPosition: {x: 117.85901, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &935622356
@@ -6584,7 +6584,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 155, y: 0}
+  m_AnchoredPosition: {x: 153.45953, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1507902821
@@ -7028,8 +7028,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 971cd1034bcf579cbae3eda63e51b835, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _positionDistanceThreshold: 0.2
-  _orientationAngleThreshold: 5
+  _positionDistanceThreshold: 0.1
+  _orientationAngleThreshold: 2.5
 --- !u!114 &1759259829
 MonoBehaviour:
   m_ObjectHideFlags: 0

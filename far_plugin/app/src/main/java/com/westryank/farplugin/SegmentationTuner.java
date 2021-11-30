@@ -98,7 +98,6 @@ public class SegmentationTuner {
             Imgproc.resize(segmentation, segmentation, originalSize, 0, 0, Imgproc.INTER_NEAREST);
         }
         Core.rotate(segmentation, segmentation, Core.ROTATE_180);
-//        Imgproc.rectangle(segmentation, new Point(0, 0), new Point(segmentation.width(), segmentation.height()), new Scalar(0, 0, 0, 1), 10);
         // TODO: Optimize so we don't have to create this bitmap each time.
         Bitmap outputBitmap = Bitmap.createBitmap(inInputBitmap.getWidth(), inInputBitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(segmentation, outputBitmap);
@@ -140,7 +139,9 @@ public class SegmentationTuner {
         if (_outputResultType == OutputResultTypeEnum.Final) {
 
             Imgproc.watershed(inImage, watershedMask);
-            Core.compare(watershedMask, BACKGROUND, watershedMask, Core.CMP_EQ);
+            Core.compare(watershedMask, FOREGROUND, watershedMask, Core.CMP_EQ);
+            Imgproc.dilate(watershedMask, watershedMask, MORPHOLOGY_KERNEL, KERNEL_ANCHOR, 1);
+            Core.absdiff(watershedMask, new Scalar(255), watershedMask);
         }
         watershedMask.convertTo(watershedMask, CvType.CV_8UC1);
         return watershedMask;

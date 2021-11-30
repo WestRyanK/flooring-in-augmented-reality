@@ -38,8 +38,8 @@ Shader "Projector/Segmentation" {
 			fixed4 frag(vertex2fragment input) : SV_Target
 			{
 				fixed2 coords = (input.uv / input.uv.w).xy;
-				if (any(coords.xy > 1) || any(coords.xy < 0))
-					return fixed(1);
+				// if (any(coords.xy > 1) || any(coords.xy < 0))
+				// 	return fixed(1);
 
                 fixed color = tex2D(_MainTex, coords).r - 0.5;
                 clip(color);
