@@ -17,6 +17,7 @@ def fuzz_copy(src, dst, mirror_dst, resample_type, pad_color, conversion):
     if conversion is not None:
         image_array = np.array(image)
         image_array = conversion(image_array)
+        image_array = image_array.astype(np.uint8)
         image = Image.fromarray(image_array)
     image.save(dst)
     image_mirror = ImageOps.mirror(image)

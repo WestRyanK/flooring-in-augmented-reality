@@ -9,6 +9,7 @@ deeplab/models
 deeplab/exp
 deeplab/init_checkpoint
 far_app/Assets/Plugins/Android/far_plugin/
+*.pyc
 
 
 
