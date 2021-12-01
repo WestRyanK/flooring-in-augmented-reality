@@ -3,7 +3,8 @@ package com.westryank.farplugin;
 public enum SegmentationModelTypeEnum {
     model_513("deeplab_mnv2_513.tflite"),
     model_257("deeplab_mnv2_257_osade.tflite"),
-    model_129("deeplab_mnv2_129_osade.tflite");
+    model_129("deeplab_mnv2_129_osade.tflite"),
+    model_513_osade("deeplab_mnv2_513_osade.tflite");
 
     private final String _filename;
 

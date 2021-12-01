@@ -25,12 +25,23 @@ public class SegmentationTuner {
     private OutputResultTypeEnum _outputResultType;
     private float _intermediateSize = 1.0f;
 
+    private Mat maskMat;
+    private Mat imageMat;
+    private Mat watershedMaskMat;
+    private Mat sureForegroundMaskMat;
+    private Mat sureBackgroundMaskMat;
+
     public SegmentationTuner(OutputResultTypeEnum inOutputResultType) {
         OpenCVUtils.InitializeOpenCV();
 
         MORPHOLOGY_KERNEL = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3));
         KERNEL_ANCHOR = new Point(-1, -1);
         SetOutputResultType(inOutputResultType);
+        maskMat = new Mat();
+        imageMat = new Mat();
+        watershedMaskMat = new Mat();
+        sureForegroundMaskMat = new Mat();
+        sureBackgroundMaskMat = new Mat();
     }
 
     public void Dispose() {
@@ -40,30 +51,25 @@ public class SegmentationTuner {
     }
 
     public Bitmap ConvertMaskBitmap(Bitmap inMask) {
-        Mat mask = BitmapToMaskMat(inMask);
-        Core.absdiff(mask, new Scalar(1), mask);
-        Imgproc.cvtColor(mask, mask, Imgproc.COLOR_GRAY2BGRA);
-        Core.multiply(mask, new Scalar(255, 255, 255, 1), mask);
-        Core.rotate(mask, mask, Core.ROTATE_180);
+        BitmapToMaskMat(inMask);
+        Core.absdiff(maskMat, new Scalar(1), maskMat);
+        Imgproc.cvtColor(maskMat, maskMat, Imgproc.COLOR_GRAY2BGRA);
+        Core.multiply(maskMat, new Scalar(255, 255, 255, 1), maskMat);
+        Core.rotate(maskMat, maskMat, Core.ROTATE_180);
         Bitmap outputBitmap = Bitmap.createBitmap(inMask.getWidth(), inMask.getHeight(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(mask, outputBitmap);
-        mask.release();
+        Utils.matToBitmap(maskMat, outputBitmap);
         return outputBitmap;
     }
 
-    private Mat BitmapToMaskMat(Bitmap inMask) {
-        Mat mask = new Mat();
-        Utils.bitmapToMat(inMask, mask);
-        Core.extractChannel(mask, mask, 3);
-        Imgproc.threshold(mask, mask, 0, 1, Imgproc.THRESH_BINARY);
-        return mask;
+    private void BitmapToMaskMat(Bitmap inMask) {
+        Utils.bitmapToMat(inMask, maskMat);
+        Core.extractChannel(maskMat, maskMat, 3);
+        Imgproc.threshold(maskMat, maskMat, 0, 1, Imgproc.THRESH_BINARY);
     }
 
-    private Mat BitmapToImageMat(Bitmap inImage) {
-        Mat image = new Mat();
-        Utils.bitmapToMat(inImage, image);
-        Imgproc.cvtColor(image, image, Imgproc.COLOR_BGRA2BGR);
-        return image;
+    private void BitmapToImageMat(Bitmap inImage) {
+        Utils.bitmapToMat(inImage, imageMat);
+        Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_BGRA2BGR);
     }
 
     public Bitmap Finetune(Bitmap inInputBitmap, Bitmap inMask) {
@@ -78,73 +84,62 @@ public class SegmentationTuner {
         }
 
         // TODO: Optimize so that all these mats are reused
-        Mat mask = BitmapToMaskMat(inMask);
-        Mat image = BitmapToImageMat(inInputBitmap);
-        Size originalSize = mask.size();
+        BitmapToMaskMat(inMask);
+        BitmapToImageMat(inInputBitmap);
+        Size originalSize = maskMat.size();
         if (_intermediateSize != 1.0f) {
-            Imgproc.resize(mask, mask, new Size(), _intermediateSize, _intermediateSize, Imgproc.INTER_LINEAR);
-            Imgproc.resize(image, image, new Size(), _intermediateSize, _intermediateSize, Imgproc.INTER_LINEAR);
+            Imgproc.resize(maskMat, maskMat, new Size(), _intermediateSize, _intermediateSize, Imgproc.INTER_LINEAR);
+            Imgproc.resize(imageMat, imageMat, new Size(), _intermediateSize, _intermediateSize, Imgproc.INTER_LINEAR);
         }
 
-        Mat segmentation = WatershedSegmentation(image, mask);
-        Imgproc.cvtColor(segmentation, segmentation, Imgproc.COLOR_GRAY2BGRA);
+        Mat segmentationMat = WatershedSegmentation(imageMat, maskMat);
+        Imgproc.cvtColor(segmentationMat, segmentationMat, Imgproc.COLOR_GRAY2BGRA);
         if (_outputResultType == OutputResultTypeEnum.Final) {
-            Core.multiply(segmentation, new Scalar(255, 255, 255, 1), segmentation);
+            Core.multiply(segmentationMat, new Scalar(255, 255, 255, 1), segmentationMat);
         } else if (_outputResultType == OutputResultTypeEnum.SegmentationMask) {
-            Core.multiply(segmentation, new Scalar(127, 127, 127, 1), segmentation);
+            Core.multiply(segmentationMat, new Scalar(127, 127, 127, 1), segmentationMat);
         }
 
         if (_intermediateSize != 1.0f) {
-            Imgproc.resize(segmentation, segmentation, originalSize, 0, 0, Imgproc.INTER_NEAREST);
+            Imgproc.resize(segmentationMat, segmentationMat, originalSize, 0, 0, Imgproc.INTER_NEAREST);
         }
-        Core.rotate(segmentation, segmentation, Core.ROTATE_180);
+        Core.rotate(segmentationMat, segmentationMat, Core.ROTATE_180);
         // TODO: Optimize so we don't have to create this bitmap each time.
         Bitmap outputBitmap = Bitmap.createBitmap(inInputBitmap.getWidth(), inInputBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(segmentation, outputBitmap);
+        Utils.matToBitmap(segmentationMat, outputBitmap);
 
         Log.d(TAG, "OutputBmp: " + Integer.toString(outputBitmap.getWidth()) + " " + Integer.toString(outputBitmap.getHeight()) + " " + outputBitmap.getConfig().toString());
-        mask.release();
-        image.release();
-        segmentation.release();
 
         return outputBitmap;
     }
 
-    private Mat CreateWatershedMask(Mat inApproxForegroundMask) {
-        Mat sureForegroundMask = new Mat();
+    private void CreateWatershedMask(Mat inApproxForegroundMaskMat) {
         int erode_size = (int) (21 * _intermediateSize); // 21
-        Imgproc.erode(inApproxForegroundMask, sureForegroundMask, MORPHOLOGY_KERNEL, KERNEL_ANCHOR, erode_size);
+        Imgproc.erode(inApproxForegroundMaskMat, sureForegroundMaskMat, MORPHOLOGY_KERNEL, KERNEL_ANCHOR, erode_size);
 
-        Mat sureBackgroundMask = new Mat();
         int dilate_size = (int) (21 * _intermediateSize); // 41
-        Imgproc.dilate(inApproxForegroundMask, sureBackgroundMask, MORPHOLOGY_KERNEL, KERNEL_ANCHOR, dilate_size);
-        Core.absdiff(sureBackgroundMask, new Scalar(1), sureBackgroundMask); // 1 - background
+        Imgproc.dilate(inApproxForegroundMaskMat, sureBackgroundMaskMat, MORPHOLOGY_KERNEL, KERNEL_ANCHOR, dilate_size);
+        Core.absdiff(sureBackgroundMaskMat, new Scalar(1), sureBackgroundMaskMat); // 1 - background
 
-        Core.multiply(sureForegroundMask, FOREGROUND, sureForegroundMask);
-        Core.multiply(sureBackgroundMask, BACKGROUND, sureBackgroundMask);
+        Core.multiply(sureForegroundMaskMat, FOREGROUND, sureForegroundMaskMat);
+        Core.multiply(sureBackgroundMaskMat, BACKGROUND, sureBackgroundMaskMat);
 
-        Mat watershedMask = new Mat();
-        Core.add(sureForegroundMask, sureBackgroundMask, watershedMask);
+        Core.add(sureForegroundMaskMat, sureBackgroundMaskMat, watershedMaskMat);
 
-        sureForegroundMask.release();
-        sureBackgroundMask.release();
-
-        watershedMask.convertTo(watershedMask, CvType.CV_32S);
-
-        return watershedMask;
+        watershedMaskMat.convertTo(watershedMaskMat, CvType.CV_32S);
     }
 
-    private Mat WatershedSegmentation(Mat inImage, Mat inMask) {
-        Mat watershedMask = CreateWatershedMask(inMask);
+    private Mat WatershedSegmentation(Mat inImageMat, Mat inMaskMat) {
+        CreateWatershedMask(inMaskMat);
         if (_outputResultType == OutputResultTypeEnum.Final) {
 
-            Imgproc.watershed(inImage, watershedMask);
-            Core.compare(watershedMask, FOREGROUND, watershedMask, Core.CMP_EQ);
-            Imgproc.dilate(watershedMask, watershedMask, MORPHOLOGY_KERNEL, KERNEL_ANCHOR, 1);
-            Core.absdiff(watershedMask, new Scalar(255), watershedMask);
+            Imgproc.watershed(inImageMat, watershedMaskMat);
+            Core.compare(watershedMaskMat, FOREGROUND, watershedMaskMat, Core.CMP_EQ);
+            Imgproc.dilate(watershedMaskMat, watershedMaskMat, MORPHOLOGY_KERNEL, KERNEL_ANCHOR, 1);
+            Core.absdiff(watershedMaskMat, new Scalar(255), watershedMaskMat);
         }
-        watershedMask.convertTo(watershedMask, CvType.CV_8UC1);
-        return watershedMask;
+        watershedMaskMat.convertTo(watershedMaskMat, CvType.CV_8UC1);
+        return watershedMaskMat;
     }
 
     public void SetOutputResultType(OutputResultTypeEnum inOutputResultType) {

@@ -21,20 +21,27 @@ public class LightingExtractor {
     private static final int GRAY = 128;
     private static final int DARKEN_BIAS = 38;
 
+    private Mat imageMat;
+    private Mat maskMat;
+    private Mat blurredMaskMat;
+
+    public LightingExtractor() {
+        imageMat = new Mat();
+        maskMat = new Mat();
+        blurredMaskMat = new Mat();
+    }
+
     private void Clamp(Mat inMat) {
         Imgproc.threshold(inMat, inMat, 0, 255, Imgproc.THRESH_TOZERO);
         Imgproc.threshold(inMat, inMat, 255, 255, Imgproc.THRESH_TRUNC);
     }
 
     public Bitmap ExtractLighting(Bitmap inImage, Bitmap inMask) {
-        Mat imageMat = new Mat();
         Utils.bitmapToMat(inImage, imageMat);
-        Mat maskMat = new Mat();
         Utils.bitmapToMat(inMask, maskMat);
         Core.extractChannel(maskMat, maskMat, 0);
         Core.rotate(maskMat, maskMat, Core.ROTATE_180);
         Core.absdiff(maskMat, new Scalar(255), maskMat);
-        Mat blurredMaskMat = new Mat();
         maskMat.convertTo(blurredMaskMat, CvType.CV_32FC1, 1.0f / 255);
 
         Size blurKernel = new Size(11, 11);
@@ -60,39 +67,35 @@ public class LightingExtractor {
         Bitmap outputBitmap = Bitmap.createBitmap(inImage.getWidth(), inImage.getHeight(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(imageMat, outputBitmap);
 
-        imageMat.release();
-        maskMat.release();
-        blurredMaskMat.release();
-
         return outputBitmap;
     }
 
-    double median(Mat inMat, Mat inMask) {
-        int binCount = 256;
-        int maxValue = 255;
-        List<Mat> imgs = new ArrayList<>();
-        imgs.add(inMat);
-        MatOfInt channels = new MatOfInt(0);
-        Mat histogram = new Mat();
-        MatOfInt histogramSize = new MatOfInt(binCount);
-        MatOfFloat histogramRanges = new MatOfFloat(0, maxValue);
-        Imgproc.calcHist(imgs, channels, inMask, histogram, histogramSize, histogramRanges, false);
-
-        float[] valueArray = new float[1];
-        double histogramTotal = Core.sumElems(histogram).val[0];
-        long halfCount = (long)(histogramTotal / 2);
-        long sumTotal = 0;
-        int index = 0;
-        for (int i = 0; i < binCount; i++) {
-            histogram.get(i, 0, valueArray);
-            sumTotal += valueArray[0];
-            if (sumTotal > halfCount) {
-                index = i;
-                break;
-            }
-        }
-        float binPercent = ((float)(index) / binCount);
-        int medianValue = (int)(binPercent * maxValue);
-        return medianValue;
-    }
+//    double median(Mat inMat, Mat inMask) {
+//        int binCount = 256;
+//        int maxValue = 255;
+//        List<Mat> imgs = new ArrayList<>();
+//        imgs.add(inMat);
+//        MatOfInt channels = new MatOfInt(0);
+//        Mat histogram = new Mat();
+//        MatOfInt histogramSize = new MatOfInt(binCount);
+//        MatOfFloat histogramRanges = new MatOfFloat(0, maxValue);
+//        Imgproc.calcHist(imgs, channels, inMask, histogram, histogramSize, histogramRanges, false);
+//
+//        float[] valueArray = new float[1];
+//        double histogramTotal = Core.sumElems(histogram).val[0];
+//        long halfCount = (long)(histogramTotal / 2);
+//        long sumTotal = 0;
+//        int index = 0;
+//        for (int i = 0; i < binCount; i++) {
+//            histogram.get(i, 0, valueArray);
+//            sumTotal += valueArray[0];
+//            if (sumTotal > halfCount) {
+//                index = i;
+//                break;
+//            }
+//        }
+//        float binPercent = ((float)(index) / binCount);
+//        int medianValue = (int)(binPercent * maxValue);
+//        return medianValue;
+//    }
 }
