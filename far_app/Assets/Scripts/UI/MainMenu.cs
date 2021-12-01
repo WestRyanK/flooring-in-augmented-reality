@@ -27,4 +27,14 @@ public class MainMenu : MonoBehaviour
             _extractLightingDurationText.text = $"Lighting: {inExtractLightingDuration} ms";
         }
     }
+
+    public void ShowMainMenu()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void HideMainMenu()
+    {
+        gameObject.SetActive(false);
+    }
 }
