@@ -1,8 +1,10 @@
 package com.westryank.farplugin;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -59,5 +61,16 @@ public class OpenCVUtils {
             sb.append(minMax.maxVal);
         }
         return sb.toString();
+    }
+
+    public static Bitmap CreateOutputBitmap(Bitmap inBitmap, Mat inMat) {
+        if (inBitmap == null || inBitmap.getWidth() != inMat.width() || inBitmap.getHeight() != inMat.height()) {
+            if (inBitmap != null) {
+                inBitmap.recycle();
+            }
+            inBitmap = Bitmap.createBitmap(inMat.width(), inMat.height(), Bitmap.Config.ARGB_8888);
+        }
+        Utils.matToBitmap(inMat, inBitmap);
+        return inBitmap;
     }
 }

@@ -1,34 +1,29 @@
 package com.westryank.farplugin;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfFloat;
-import org.opencv.core.MatOfInt;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class LightingExtractor {
+public class LightingExtractor implements AutoCloseable{
     private static final String TAG = "Far:LightingExtractor";
     private static final int GRAY = 128;
     private static final int DARKEN_BIAS = 38;
 
-    private Mat imageMat;
-    private Mat maskMat;
-    private Mat blurredMaskMat;
+    private Mat _imageMat;
+    private Mat _maskMat;
+    private Mat _blurredMaskMat;
+    Bitmap _outputBitmap;
 
     public LightingExtractor() {
-        imageMat = new Mat();
-        maskMat = new Mat();
-        blurredMaskMat = new Mat();
+        _imageMat = new Mat();
+        _maskMat = new Mat();
+        _blurredMaskMat = new Mat();
     }
 
     private void Clamp(Mat inMat) {
@@ -37,37 +32,44 @@ public class LightingExtractor {
     }
 
     public Bitmap ExtractLighting(Bitmap inImage, Bitmap inMask) {
-        Utils.bitmapToMat(inImage, imageMat);
-        Utils.bitmapToMat(inMask, maskMat);
-        Core.extractChannel(maskMat, maskMat, 0);
-        Core.rotate(maskMat, maskMat, Core.ROTATE_180);
-        Core.absdiff(maskMat, new Scalar(255), maskMat);
-        maskMat.convertTo(blurredMaskMat, CvType.CV_32FC1, 1.0f / 255);
+        Utils.bitmapToMat(inImage, _imageMat);
+        Utils.bitmapToMat(inMask, _maskMat);
+        Core.extractChannel(_maskMat, _maskMat, 0);
+        Core.rotate(_maskMat, _maskMat, Core.ROTATE_180);
+        Core.absdiff(_maskMat, new Scalar(255), _maskMat);
+        _maskMat.convertTo(_blurredMaskMat, CvType.CV_32FC1, 1.0f / 255);
 
         Size blurKernel = new Size(11, 11);
-        Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_BGRA2GRAY);
-        Core.multiply(imageMat, maskMat, imageMat, 1.0f / 255);
+        Imgproc.cvtColor(_imageMat, _imageMat, Imgproc.COLOR_BGRA2GRAY);
+        Core.multiply(_imageMat, _maskMat, _imageMat, 1.0f / 255);
 
-        Imgproc.blur(imageMat, imageMat, blurKernel);
-        Imgproc.blur(blurredMaskMat, blurredMaskMat, blurKernel);
+        Imgproc.blur(_imageMat, _imageMat, blurKernel);
+        Imgproc.blur(_blurredMaskMat, _blurredMaskMat, blurKernel);
 
-        imageMat.convertTo(imageMat, CvType.CV_32FC1);
-        Core.divide(imageMat, blurredMaskMat, imageMat);
-        imageMat.convertTo(imageMat, CvType.CV_8UC1);
+        _imageMat.convertTo(_imageMat, CvType.CV_32FC1);
+        Core.divide(_imageMat, _blurredMaskMat, _imageMat);
+        _imageMat.convertTo(_imageMat, CvType.CV_8UC1);
 
-        Scalar avgBrightness = Core.mean(imageMat, maskMat);
+        Scalar avgBrightness = Core.mean(_imageMat, _maskMat);
 //        Scalar medBrightness = new Scalar(median(imageMat, maskMat));
         Scalar avgBrightnessOffset = new Scalar((GRAY - DARKEN_BIAS) - avgBrightness.val[0]);
-        Core.add(imageMat, avgBrightnessOffset, imageMat);
-        Clamp(imageMat);
+        Core.add(_imageMat, avgBrightnessOffset, _imageMat);
+        Clamp(_imageMat);
 
-        Core.rotate(imageMat, imageMat, Core.ROTATE_180);
-        Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_GRAY2BGRA);
+        Core.rotate(_imageMat, _imageMat, Core.ROTATE_180);
+        Imgproc.cvtColor(_imageMat, _imageMat, Imgproc.COLOR_GRAY2BGRA);
 
-        Bitmap outputBitmap = Bitmap.createBitmap(inImage.getWidth(), inImage.getHeight(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(imageMat, outputBitmap);
+        _outputBitmap = OpenCVUtils.CreateOutputBitmap(_outputBitmap, _imageMat);
 
-        return outputBitmap;
+        return _outputBitmap;
+    }
+
+    @Override
+    public void close() throws Exception {
+        _imageMat.release();
+        _maskMat.release();
+        _blurredMaskMat.release();
+        _outputBitmap.recycle();
     }
 
 //    double median(Mat inMat, Mat inMask) {

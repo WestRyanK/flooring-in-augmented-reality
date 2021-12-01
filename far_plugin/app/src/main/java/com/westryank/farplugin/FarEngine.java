@@ -49,9 +49,9 @@ public class FarEngine {
             _segmentationModelLock.unlock();
         }
 
-        if (_segmentationBitmap != null) {
-            _segmentationBitmap.recycle();
-        }
+//        if (_segmentationBitmap != null) {
+//            _segmentationBitmap.recycle();
+//        }
 
         if (_outputResultType == OutputResultTypeEnum.NoFineTuning) {
             _segmentationBitmap = _segmentationTuner.ConvertMaskBitmap(initialSegmentationBitmap);
@@ -68,7 +68,7 @@ public class FarEngine {
         Bitmap lightingBitmap = _lightingExtractor.ExtractLighting(_inputBitmap, _segmentationBitmap);
 
         _lightingBuffer = CopyBitmapToBuffer(lightingBitmap, _lightingBuffer);
-        lightingBitmap.recycle();
+//        lightingBitmap.recycle();
         return _lightingBuffer.array();
     }
 
@@ -91,10 +91,10 @@ public class FarEngine {
 
     public void InitSegmentationTuner(OutputResultTypeEnum inOutputResultType) {
         _outputResultType = inOutputResultType;
-        if (_segmentationTuner != null) {
-            _segmentationTuner.Dispose();
-        }
         try {
+            if (_segmentationTuner != null) {
+                _segmentationTuner.close();
+            }
             Log.v(TAG, "Initializing SegmentationTuner");
             _segmentationTuner = new SegmentationTuner(inOutputResultType);
             Log.v(TAG, "SegmentationTuner Initialized");
@@ -107,7 +107,7 @@ public class FarEngine {
         try {
             _segmentationModelLock.lock();
             if (_segmentationModel != null) {
-                _segmentationModel.Dispose();
+                _segmentationModel.close();
             }
             Log.v(TAG, "Initializing SegmentationModel");
             _segmentationModel = new SegmentationModel(_context, inSegmentationModelType);
@@ -121,6 +121,9 @@ public class FarEngine {
 
     public void InitLightingExtractor() {
         try {
+            if (_lightingExtractor != null) {
+                _lightingExtractor.close();
+            }
             Log.v(TAG, "Initializing ShadowExtractor");
             _lightingExtractor = new LightingExtractor();
         } catch (Exception e) {
@@ -141,6 +144,10 @@ public class FarEngine {
 
         int[] shape = {inHeight, inWidth, 3};
         _inputTensor.load(inInputImage, shape);
+
+        if (_inputBitmap != null) {
+            _inputBitmap.recycle();
+        }
         _inputBitmap = _inputTensor.getBitmap();
     }
 

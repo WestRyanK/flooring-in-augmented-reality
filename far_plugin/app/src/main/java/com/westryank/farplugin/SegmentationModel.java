@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.util.List;
 
-public class SegmentationModel {
+public class SegmentationModel implements AutoCloseable{
     private static final String TAG = "Far:SegmentationModel";
 
     private ImageSegmenter _imageSegmenter;
@@ -29,12 +29,6 @@ public class SegmentationModel {
             _imageSegmenter = ImageSegmenter.createFromBuffer(buffer);
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
-        }
-    }
-
-    public void Dispose() {
-        if (_imageSegmenter != null && !_imageSegmenter.isClosed()) {
-            _imageSegmenter.close();
         }
     }
 
@@ -65,6 +59,13 @@ public class SegmentationModel {
         } catch (Exception e) {
             Log.e(TAG, "Infer: Error occurred", e);
             return null;
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (_imageSegmenter != null && !_imageSegmenter.isClosed()) {
+            _imageSegmenter.close();
         }
     }
 }
