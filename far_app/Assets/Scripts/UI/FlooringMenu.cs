@@ -21,6 +21,7 @@ public class FlooringMenu : BasePopup
         _farSettings = FindObjectOfType<FarSettings>();
     }
 
+
     private void PopulateFlooringOptions()
     {
         if (_flooringButtonPrefab && _flooringOptionsParent && _farSettings)

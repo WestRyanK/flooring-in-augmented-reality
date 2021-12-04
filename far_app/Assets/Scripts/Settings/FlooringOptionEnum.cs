@@ -5,16 +5,18 @@ using System;
 
 public enum FlooringOptionEnum
 {
+    [EnumName("Tile 0")]
+    tile0 = 0,
     [EnumName("Tile 1")]
-    tile1 = 0,
+    tile1 = 1,
     [EnumName("Tile 2")]
-    tile2 = 1,
+    tile2 = 2,
     [EnumName("Tile 3")]
-    tile3 = 2,
+    tile3 = 3,
     [EnumName("Tile 4")]
-    tile4 = 3,
+    tile4 = 4,
     [EnumName("Lava")]
-    lava = 4
+    lava = 5
 }
 
 [Serializable]

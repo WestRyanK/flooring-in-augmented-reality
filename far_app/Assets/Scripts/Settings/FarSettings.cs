@@ -86,6 +86,7 @@ public class FarSettings : MonoBehaviour
         }
     }
 
+
     [SerializeField]
     private List<FlooringOptionEnumToTexture2D> _flooringOptionTexturesList;
     public Dictionary<FlooringOptionEnum, Texture2D> _flooringOptionTextures;
