@@ -86,10 +86,29 @@ public class FarSettings : MonoBehaviour
         }
     }
 
+    private int _flooringRotation = 0;
+    public int FlooringRotation
+    {
+        get 
+        {
+            return _flooringRotation;
+        }
+        set
+        {
+            _flooringRotation = value;
+            if (_flooringParent)
+            {
+                _flooringParent.rotation = Quaternion.AngleAxis(_flooringRotation, Vector3.up);
+            }
+        }
+    }
+
 
     [SerializeField]
     private List<FlooringOptionEnumToTexture2D> _flooringOptionTexturesList;
     public Dictionary<FlooringOptionEnum, Texture2D> _flooringOptionTextures;
+    [SerializeField]
+    private Transform _flooringParent;
     [SerializeField]
     private GameObject _flooringPlane;
     [SerializeField]

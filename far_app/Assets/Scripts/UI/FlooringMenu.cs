@@ -9,6 +9,8 @@ public class FlooringMenu : BasePopup
     private FlooringButton _flooringButtonPrefab;
     [SerializeField]
     private GameObject _flooringOptionsParent;
+    [SerializeField]
+    private int _rotationAmount;
     private FarSettings _farSettings;
 
     void Start()
@@ -47,6 +49,14 @@ public class FlooringMenu : BasePopup
         if (_farSettings)
         {
             _farSettings.FlooringOption = inFlooringOption;
+        }
+    }
+
+    public void OnRotateFlooringButtonClicked(int inDirection)
+    {
+        if (_farSettings)
+        {
+            _farSettings.FlooringRotation += inDirection * _rotationAmount;
         }
     }
 }
