@@ -60,13 +60,17 @@ public class CameraImageFetcher : MonoBehaviour
         }
     }
 
-    public static int[] ConvertCameraBytesToInts(NativeList<byte> inCameraDataBytes, ref int refWidth, ref int refHeight)
+    public static void ConvertCameraBytesToInts(NativeList<byte> inCameraDataBytes, ref int refWidth, ref int refHeight, ref int[] refCameraIntData)
     {
         int inSrcWidth = refWidth;
         int inSrcHeight = refHeight;
         int inDstWidth = refHeight;
 
-        int[] cameraIntData = new int[inCameraDataBytes.Length];
+        if (refCameraIntData == null || refCameraIntData.Length != inCameraDataBytes.Length)
+        {
+            refCameraIntData = new int[inCameraDataBytes.Length];
+        }
+
         // Transpose, mirror x, mirror Y
         for (int y = 0; y < inSrcHeight; y++)
         {
@@ -78,14 +82,13 @@ public class CameraImageFetcher : MonoBehaviour
                 int dstY = x * inDstWidth * DEPTH;
                 int srcX = x * DEPTH;
                 // int srcX = (srcWidth - x - 1) * DEPTH;
-                cameraIntData[dstY + dstX + 0] = (int)inCameraDataBytes[srcY + srcX + 0];
-                cameraIntData[dstY + dstX + 1] = (int)inCameraDataBytes[srcY + srcX + 1];
-                cameraIntData[dstY + dstX + 2] = (int)inCameraDataBytes[srcY + srcX + 2];
+                refCameraIntData[dstY + dstX + 0] = (int)inCameraDataBytes[srcY + srcX + 0];
+                refCameraIntData[dstY + dstX + 1] = (int)inCameraDataBytes[srcY + srcX + 1];
+                refCameraIntData[dstY + dstX + 2] = (int)inCameraDataBytes[srcY + srcX + 2];
             }
         }
 
         refWidth = inSrcHeight;
         refHeight = inSrcWidth;
-        return cameraIntData;
     }
 }

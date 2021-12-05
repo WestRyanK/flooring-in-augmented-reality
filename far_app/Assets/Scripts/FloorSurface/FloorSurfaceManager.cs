@@ -23,6 +23,7 @@ public class FloorSurfaceManager : MonoBehaviour
     private CameraImageFetcher _cameraImageFetcher;
     private bool _isReadyForNextImage;
     private NativeList<byte> _cameraImage;
+    private int[] _cameraImageInts;
     private FarSettings _settings;
 
     void Start()
@@ -32,6 +33,7 @@ public class FloorSurfaceManager : MonoBehaviour
         PluginWrapper.Init(_settings.SegmentationModelType, _settings.OutputResultType);
 
         _cameraImage = new NativeList<byte>(Allocator.Persistent);
+        _cameraImageInts = null;
         InitProjectorTexture(480, 640, ref _segmentationTexture);
         InitProjectorTexture(480, 640, ref _lightingTexture);
         _isReadyForNextImage = true;
@@ -67,8 +69,8 @@ public class FloorSurfaceManager : MonoBehaviour
             {
                 using (totalStopwatch = new Stopwatch())
                 {
-                    int[] cameraImage = CameraImageFetcher.ConvertCameraBytesToInts(_cameraImage, ref width, ref height);
-                    PluginWrapper.SetInputImage(cameraImage, width, height);
+                    CameraImageFetcher.ConvertCameraBytesToInts(_cameraImage, ref width, ref height, ref _cameraImageInts);
+                    PluginWrapper.SetInputImage(_cameraImageInts, width, height);
                     using (segmentationStopwatch = new Stopwatch())
                     {
                         segmentationTextureData = PluginWrapper.SegmentInputImage();
@@ -83,10 +85,11 @@ public class FloorSurfaceManager : MonoBehaviour
             UpdateTexture(segmentationTextureData, ref _segmentationTexture);
             UpdateTexture(lightingTextureData, ref _lightingTexture);
 
-            Debug.Log($"SegmentationTexture: {_segmentationTexture}");
             _onSegmentImageComplete.Invoke(_segmentationTexture);
-            Debug.Log($"LightingTexture: {_lightingTexture}");
             _onExtractLightingComplete.Invoke(_lightingTexture);
+            Debug.Log($"TotalDuration: {totalStopwatch?.Duration}");
+            Debug.Log($"SegmentationDuration: {segmentationStopwatch?.Duration}");
+            Debug.Log($"ExtractLightingDuration: {extractLightingStopwatch?.Duration}");
             _onProcessCameraImageComplete.Invoke(
                 totalStopwatch?.Duration ?? 0,
                 segmentationStopwatch?.Duration ?? 0,
