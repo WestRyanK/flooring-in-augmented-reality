@@ -12,6 +12,11 @@ public class SettingsMenu : BasePopup
     private Dropdown _outputResultTypeDropdown;
     [SerializeField]
     private Dropdown _lightingTypeDropdown;
+
+    [SerializeField]
+    private Toggle _isStatsPanelVisibleToggle;
+    [SerializeField]
+    private Toggle _isPointCloudVisibleToggle;
     private FarSettings _farSettings;
 
     public void Start()
@@ -20,6 +25,14 @@ public class SettingsMenu : BasePopup
         LoadDropdown(typeof(SegmentationModelTypeEnum), _segmentationModelTypeDropdown, (int)_farSettings.SegmentationModelType);
         LoadDropdown(typeof(OutputResultTypeEnum), _outputResultTypeDropdown, (int)_farSettings.OutputResultType);
         LoadDropdown(typeof(LightingTypeEnum), _lightingTypeDropdown, (int)_farSettings.LightingType);
+        if (_isStatsPanelVisibleToggle)
+        {
+            _isStatsPanelVisibleToggle.isOn = _farSettings.IsStatsPanelVisible;
+        }
+        if (_isPointCloudVisibleToggle)
+        {
+            _isPointCloudVisibleToggle.isOn = _farSettings.IsPointCloudVisible;
+        }
     }
 
     public void LoadDropdown(Type inEnumType, Dropdown inDropdown, int inInitialValue)
@@ -55,5 +68,15 @@ public class SettingsMenu : BasePopup
         LightingTypeEnum selectedValue = (LightingTypeEnum)inComboIndex;
         Debug.Log($"Set LightingType to {selectedValue}");
         _farSettings.LightingType = selectedValue;
+    }
+
+    public void OnStatsPanelVisibleChanged(bool inIsVisible)
+    {
+        _farSettings.IsStatsPanelVisible = inIsVisible;
+    }
+
+    public void OnPointCloudVisibleChanged(bool inIsVisible)
+    {
+        _farSettings.IsPointCloudVisible = inIsVisible;
     }
 }

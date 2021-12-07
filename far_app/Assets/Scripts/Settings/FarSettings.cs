@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class FarSettings : MonoBehaviour
 {
+    [Header("Settings Values")]
     [SerializeField]
     private OutputResultTypeEnum _outputResultType = OutputResultTypeEnum.final;
     public OutputResultTypeEnum OutputResultType
@@ -86,6 +87,7 @@ public class FarSettings : MonoBehaviour
         }
     }
 
+    [SerializeField]
     private int _flooringRotation = 0;
     public int FlooringRotation
     {
@@ -103,7 +105,48 @@ public class FarSettings : MonoBehaviour
         }
     }
 
+    [SerializeField]
+    private bool _isStatsPanelVisible = false;
+    public bool IsStatsPanelVisible
+    {
+        get
+        {
+            return _isStatsPanelVisible;
+        }
+        set
+        {
+            _isStatsPanelVisible = value;
+            if (_statsPanel)
+            {
+                _statsPanel.SetActive(_isStatsPanelVisible);
+            }
+        }
+    }
 
+    [SerializeField]
+    private bool _isPointCloudVisible = false;
+    public bool IsPointCloudVisible
+    {
+        get
+        {
+            return _isPointCloudVisible;
+        }
+        set
+        {
+            _isPointCloudVisible = value;
+            if (_pointCloud)
+            {
+                _pointCloud.SetActive(_isPointCloudVisible);
+            }
+        }
+    }
+
+    [Header("References")]
+    [SerializeField]
+    private GameObject _pointCloud;
+
+    [SerializeField]
+    private GameObject _statsPanel;
     [SerializeField]
     private List<FlooringOptionEnumToTexture2D> _flooringOptionTexturesList;
     public Dictionary<FlooringOptionEnum, Texture2D> _flooringOptionTextures;
