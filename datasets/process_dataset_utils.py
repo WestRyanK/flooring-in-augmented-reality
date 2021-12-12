@@ -6,19 +6,19 @@ import os
 import math
 
 THRESHOLD = 0.08
-DST_SIZE = 1024
+DST_SIZE = 513
 
 
 def fuzz_copy(src, dst, mirror_dst, resample_type, pad_color, conversion):
     image = Image.open(src)
 
     image.thumbnail((DST_SIZE, DST_SIZE), resample=resample_type)
-    image = pad(image, (DST_SIZE, DST_SIZE), resample_type, color=pad_color)
     if conversion is not None:
         image_array = np.array(image)
         image_array = conversion(image_array)
         image_array = image_array.astype(np.uint8)
         image = Image.fromarray(image_array)
+    image = pad(image, (DST_SIZE, DST_SIZE), resample_type, color=pad_color)
     image.save(dst)
     image_mirror = ImageOps.mirror(image)
     image_mirror.save(mirror_dst)
@@ -63,7 +63,7 @@ def fuzz_copy_all(paths, folder_name, output_dir, inputs_dir, labels_dir, dst_ex
                         label_dst_path,
                         label_mirror_dst_path,
                         resample_type=Image.NEAREST,
-                        pad_color=0,
+                        pad_color=255,
                         conversion=conversion)
                 except Exception as e:
                     print("Error processing '{}' and '{}'".format(src_input, src_label))
