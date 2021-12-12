@@ -2,14 +2,17 @@
 
 # This script is used to train DeepLab-Mobilenet-v2 using the Flooring dataset and export it to a tflite file.
 
+#echo "Sleeping..."
+#sleep 5h
+#echo "Done"
 # Settings
 CLASS_COUNT=21
 OUTPUT_SIZE=513
-IMAGE_SIZE=1024
+IMAGE_SIZE=513
 OUTPUT_STRIDE=32 # https://github.com/tensorflow/models/issues/6464
 DATASET_NAME="flooring"
 INIT_LAST_LAYER=true
-NUM_ITERATIONS=40000
+NUM_ITERATIONS=10000
 MODEL_VARIANT="mobilenet_v2"
 TFLITE_MODEL_OUTPUT_DIR="far_plugin/app/src/main/assets"
 
@@ -81,7 +84,7 @@ python "deeplab/train.py" \
   --model_variant=${MODEL_VARIANT} \
   --dataset="${DATASET_NAME}" \
   --output_stride=${OUTPUT_STRIDE} \
-  --train_batch_size=12 \
+  --train_batch_size=16 \
   --training_number_of_steps="${NUM_ITERATIONS}" \
   --fine_tune_batch_norm=true \
   --initialize_last_layer=${INIT_LAST_LAYER} \
@@ -89,9 +92,30 @@ python "deeplab/train.py" \
   --train_logdir="${TRAIN_LOGDIR}" \
   --dataset_dir="${DATASET_OUTPUT_DIR}" \
   --train_crop_size="${OUTPUT_SIZE},${OUTPUT_SIZE}" \
-  --log_steps=100 \
-  --save_interval_secs=240 \
-  --save_summaries_secs=240
+  --log_steps=20 \
+  --save_interval_secs=30 \
+  --save_summaries_secs=30
+#  --label_weights=2 \
+#  --label_weights=2 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1 \
+#  --label_weights=1
 
 # Visualize results.
 python "deeplab/vis.py" \
