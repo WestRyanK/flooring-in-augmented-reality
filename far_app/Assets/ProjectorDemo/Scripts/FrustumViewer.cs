@@ -4,6 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(Camera))]
 public class FrustumViewer : MonoBehaviour
 {
+    public Color _frustumLineColor;
     Camera _camera;
 
     void Start()
@@ -30,9 +31,9 @@ public class FrustumViewer : MonoBehaviour
 
         for (int i = 0; i < 4; i++)
         {
-            // Debug.DrawLine(nearCorners[i], nearCorners[(i + 1) % 4], Color.red, Time.deltaTime, true); //near corners on the created projection matrix
-            // Debug.DrawLine(farCorners[i], farCorners[(i + 1) % 4], Color.blue, Time.deltaTime, true); //far corners on the created projection matrix
-            Debug.DrawLine(nearCorners[i], farCorners[i], Color.green, Time.deltaTime, true); //sides of the created projection matrix
+            Debug.DrawLine(nearCorners[i], nearCorners[(i + 1) % 4], _frustumLineColor, Time.deltaTime, true); //near corners on the created projection matrix
+            Debug.DrawLine(farCorners[i], farCorners[(i + 1) % 4], _frustumLineColor, Time.deltaTime, true); //far corners on the created projection matrix
+            Debug.DrawLine(nearCorners[i], farCorners[i], _frustumLineColor, Time.deltaTime, true); //sides of the created projection matrix
         }
     }
 
